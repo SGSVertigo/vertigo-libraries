@@ -2,8 +2,8 @@
 Vertigo Data Logger Analysis Library.
 Created by Luke Gonsalves.
 
-FILES & DEPENDENCIES
+FILES & DEPENDENCIES:
 
-LOGS
+LOGS:
 
 Last Updated: 16/06/17
