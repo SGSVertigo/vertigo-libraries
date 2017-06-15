@@ -10,7 +10,7 @@
 
 ### LOGS
 
-Template name: `vtg_logx.csv`, where x is an integer.
+Template name: `vtg_logx.csv`, where `x` is an integer.
 
 6. - Stationary
 7. - Rotation on a bike wheel
