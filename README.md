@@ -16,4 +16,4 @@ Template name: `vtg_logx.csv`, where `x` is an integer.
 6. - Stationary
 7. - Rotation on a bike wheel
 
-##### Last Updated: _15/06/17_
+> ##### Last Updated: _15/06/17_
