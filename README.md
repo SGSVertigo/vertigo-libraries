@@ -9,5 +9,6 @@ Windows of graphs will then be generated of the processed raw data.
 
 LOGS:
 Template name vtg_logx.csv, where x is an integer.
-
-Last Updated: 16/06/17
+6 - Stationary
+7 - Rotation on a bike wheel
+Last Updated: 17/06/17
