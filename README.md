@@ -12,6 +12,7 @@
 
 Template name: `vtg_logx.csv`, where `x` is an integer.
 
+##### List of Logs: 
 6. - Stationary
 7. - Rotation on a bike wheel
 
