@@ -5,7 +5,7 @@
 ### INSTRUCTIONS
 
 1. Place `vtg_load_data.m` & `vtg_quat2eul.m` in the same directory.
-2. Run `vtg_load_data.m` inside MATLAB, you will then be prompted to open a log file.
+2. Run `vtg_load_data.m` inside MATLAB, you will then be prompted to open a log file. _(see below)_
 3. Windows of graphs will then be generated of the processed raw data.
 
 ### LOGS
