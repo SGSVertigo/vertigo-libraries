@@ -12,7 +12,7 @@
 
 Template name: _vtg_log**x**.csv_, where x is an integer.
 
-6 - Stationary
-7 - Rotation on a bike wheel
+6. - Stationary
+7. - Rotation on a bike wheel
 
-##### Last Updated: _17/06/17_
+##### Last Updated: _15/06/17_
