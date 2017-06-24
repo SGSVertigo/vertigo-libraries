@@ -5,7 +5,6 @@
 % This file is part of the Vertigo project
 %
 % Rotate the IMU data into the NED frame using the AHRS data
-
 accel_ned = zeros(length(imudata), 3);
 gyro_ned  = zeros(length(imudata), 3);
 
