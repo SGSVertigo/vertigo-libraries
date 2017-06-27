@@ -23,7 +23,20 @@ for i = 1:length(quatdata)
     euldata(i,:) = vtg_quat2eul(quatdata(i,3:6));
 end
 %euldata = vtg_quat2eul(quatdata);
-rotmXYZ = eul2rotm(euldata);
+
+euldatarad = euldata*(pi/180); %As rad as it sounds
+
+%TOM CODING (data taken every 0.01s)
+int = 600:3000; %time interval for polyfit zero error removal
+rotm = eul2rotm(euldatarad); %done in the order zyx (idk if that matters)
+imudatasplit = permute(imudata(:,3:5),[2 3 1]); %instead of n by m its 1 by m by n
+
+aworld = zeros(3,length(quatdata));
+for i = 1:length(quatdata)
+aworld(:,i) = rotm(:,:,i) * imudatasplit(1:3,:,i); %rotation matrix applied to each data point
+end
+aworld = aworld'; %flips it the right way up (wide to tall)
+
 t = imudata(:,1); %Time Variable
 
 smoothax = smooth(imudata(:,3), 0.3, 'lowess');

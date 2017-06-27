@@ -25,9 +25,8 @@ euldata = zeros(length(quatdata), 3);
 for i = 1:length(quatdata)
     euldata(i,:) = vtg_quat2eul(quatdata(i,3:6));
 end
-euldata = vtg_quat2eul(quatdata);
+%euldata = vtg_quat2eul(quatdata);
 
-rotmZYX = eul2rotm(euldata);
 
 
 
