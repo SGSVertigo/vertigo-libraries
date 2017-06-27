@@ -126,15 +126,9 @@ legend('roll', 'pitch', 'yaw');
 
 %animated plot
 figure
-curve = animatedline();
-lim = 1*10^4;
-set(gca,'XLim',[-lim lim],'YLim',[-lim lim],'ZLim',[-lim lim]);
-view(90,0);
+plot3(x, y, z);
 xlabel('X displacement');
 ylabel('Y displacement');
 zlabel('Z displacement');
-for i = 1:length(quatdata)
-    addpoints(curve,x(i),y(i),z(i));
-    drawnow
-end
+
 
