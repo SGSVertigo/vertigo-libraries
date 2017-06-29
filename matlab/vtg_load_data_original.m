@@ -2,6 +2,7 @@
 %
 % Jon Sowman 2017
 % Tom Ronayne 2017
+% Luke Gonsalves 2017
 % jon+vertigo@jonsowman.com
 
 % Ignoring gps for now (btw imu is acceleration data)
@@ -46,13 +47,18 @@ aworld = aworld'; %flips it the right way up (wide to tall)
 ax = aworld(:,1);
 ay = aworld(:,2);
 az = aworld(:,3);
+% Smooth acceleration data using s-golay filter
+smoothax = smooth(ax, 0.3, 'sgolay');
+smoothay = smooth(ay, 0.3, 'sgolay');
+smoothaz = smooth(az, 0.3, 'sgolay');
+
 apolyx = polyfit(quatdata(int,1),ax(int),1);
 apolyy = polyfit(quatdata(int,1),ay(int),1);
 apolyz = polyfit(quatdata(int,1),az(int),1);
 for i = 1:length(quatdata)
-axc(i,1) = ax(i) - apolyx(1)*quatdata(i,1) - apolyx(2);
-ayc(i,1) = ay(i) - apolyy(1)*quatdata(i,1) - apolyy(2);
-azc(i,1) = az(i) - apolyz(1)*quatdata(i,1) - apolyz(2);
+axc(i,1) = smoothax(i) - apolyx(1)*quatdata(i,1) - apolyx(2);
+ayc(i,1) = smoothay(i) - apolyy(1)*quatdata(i,1) - apolyy(2);
+azc(i,1) = smoothaz(i) - apolyz(1)*quatdata(i,1) - apolyz(2);
 end
 for i = 1:600 %remove acceleration at the begining to remove velocity drift
 axc(i) = 0;
@@ -111,8 +117,17 @@ ylabel('Displacement (idek)');
 legend('x', 'y', 'z');
 
 % Rate gyros
+% Experimental Filter
+gyrox = smooth(imudata(:,6), 0.3, 'sgolay');
+gyroy = smooth(imudata(:,7), 0.3, 'sgolay');
+gyroz = smooth(imudata(:,8), 0.3, 'sgolay');
 subplot(3,2,4);
-plot(imudata(:,1), imudata(:,6:8)); %columns 6 7 8
+hold on;
+plot(imudata(:,1), imudata(:,6:8), '-');
+hold on;
+plot(imudata(:,1), gyrox);
+plot(imudata(:,1), gyroy);
+plot(imudata(:,1), gyroz);
 xlabel('Time (s)');
 ylabel('Gyro (deg/s)');
 legend('x', 'y', 'z');
