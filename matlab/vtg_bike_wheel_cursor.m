@@ -35,14 +35,14 @@ figure
 subplot(3,1,1)
 plot (cursorn.Time, cursorn.Position)
 subplot (3,1,2)
-plot (cursore1.Time, cursore1.Position)
+plot (cursore.Time, cursore.Position)
 subplot (3,1,3)
-plot (cursord1.Time, cursord1.Position)
+plot (cursord.Time, cursord.Position)
 
 % now find a polyfit coefficients for these graphs
 pcN = polyfit(cursorn.Time, cursorn.Position,5);
-pcE = polyfit(cursore1.Time, cursore1.Position,5);
-pcD = polyfit(cursord1.Time, cursord1.Position,5);
+pcE = polyfit(cursore.Time, cursore.Position,5);
+pcD = polyfit(cursord.Time, cursord.Position,5);
 
 %pcE = polyfit (BT,E,5);
 %pcD = polyfit (CT,D,5);
