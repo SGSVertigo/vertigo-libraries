@@ -1,7 +1,7 @@
 % Jon Sowman 2017
 % Jamie Costello
 % jon+vertigo@jonsowman.com
-%
+% Luke Gonsalves
 % This file is part of the Vertigo project
 %
 % Rotate the IMU data into the NED frame using the AHRS data
@@ -37,20 +37,22 @@ ylabel('NED Position(m) ');
 %PCD) with polynomial of order 10- which may well be excessive.
 % Create a polyfit values (PVN, PVE, PVD) for all times (imudata (:,1) -all times from
 % column 1)
-pcn = polyfit(imudata(:,1),North,1);
+pcn = polyfit(imudata(:,1),North,2);
 pvn = polyval(pcn,imudata(:,1));
-pce = polyfit(imudata(:,1),East,1);
+pce = polyfit(imudata(:,1),East,2);
 pve = polyval(pce,imudata(:,1));
-pcd = polyfit(imudata(:,1),Down(:),1);
+pcd = polyfit(imudata(:,1),Down(:),2);
 pvd = polyval(pcd,imudata(:,1));
 subplot (3,1,2);
-
-plot (t, North - pvn, t, East - pve,t , Down(:)- pvd);
+pvn = smooth(North, 'moving');
+pve = smooth(East, 'moving');
+pvd = smooth(Down, 'moving');
+plot (t, North - pvn, t, East - pve,t , Down- pvd);
 xlabel('Time (s)');
 ylabel('NED Position(m) ');
 
 
-%choose times to look at in detail - I think between 5 and 20 seconds so:
+%choose times to look at in detail - I think between 60 and 70 seconds so:
 
 Corrected_North = North (6000:7000)- pvn(6000:7000);
 Corrected_East = East (6000:7000)-pve(6000:7000);
