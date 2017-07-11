@@ -1,3 +1,4 @@
+% Luke Gonsalves
 % Plot each corrected displacement vs time to find cursor data.
 figure
 subplot(3,1,1)
