@@ -75,7 +75,8 @@ plot (Time, (Corrected_Down - pvE'));
 
 figure
 %Plot the displacements vs each other
-plot3 ((smooth(Corrected_East - pvE', 0.3, 'moving')),(smooth(Corrected_North - pvN', 0.3, 'moving')),(smooth(Corrected_Down - pvD', 0.3, 'moving')))
+span = 0.15;
+plot3 ((smooth(Corrected_East - pvE', span, 'moving')),(smooth(Corrected_North - pvN', span, 'moving')),(smooth(Corrected_Down - pvD', span, 'moving')))
 xlabel('East Displacement');
 ylabel('North Displacement');
 zlabel('Down Displacement');

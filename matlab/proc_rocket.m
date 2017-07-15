@@ -8,8 +8,8 @@
 %
 
 % The start and end times in the data to process
-window_start = 55; % Seconds
-window_end = 85; % Seconds
+window_start = 55; % Rocket Default 55 Seconds
+window_end = 85; % Rocket Default 85 Seconds
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
