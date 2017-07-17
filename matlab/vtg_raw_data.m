@@ -50,8 +50,8 @@ ylabel('Orientation (deg)');
 legend('roll', 'pitch', 'yaw');
 
 figure
-%Plot the displacements vs each other
+%Plot the acclerations vs each other
 plot3(imudata(:,3), imudata(:,4), imudata(:,5));
-xlabel('X Displacement');
-ylabel('Y Displacement');
-zlabel('Z Displacement');
+xlabel('X Acceleration');
+ylabel('Y Acceleration');
+zlabel('Z Acceleration');
