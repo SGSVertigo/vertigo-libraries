@@ -5,7 +5,7 @@
 
 % Get raw data
 [csvfile, csvpath] = uigetfile('*.csv');
-csvdata = csvread([csvpath csvfile]);
+csvdata = dlmread([csvpath csvfile]);
 
 % Split into GPS and IMU data
 gpsidx = find(csvdata(:,2) == 1);
