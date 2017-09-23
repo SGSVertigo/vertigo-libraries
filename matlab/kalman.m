@@ -21,8 +21,8 @@ tendidx_gps = find(gpsdata(:,1) > window_end, 1);
 rock_time = imudata(tstartidx:tendidx, 1);
 rock_accel = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 
-rock_accel_north = (accel_ned(tstartidx:tendidx, 2) - 1) * 9.81;
-rock_accel_east = (accel_ned(tstartidx:tendidx, 1) - 1) * 9.81;
+rock_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
+rock_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 % Find the gps
 rock_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
