@@ -163,10 +163,8 @@ ylabel('East (m)');
 figure
 subplot(2,1,1);
 hold on;
-plot(kal_xn_stor(:,1), kal_xe_stor(:,1));
-%stairs(rock_pos_north, rock_pos_east);
-%scatter(rock_north_gps, rock_east_gps);
-legend('Fusion Position');
+plot(kal_xe_stor(:,1), kal_xn_stor(:,1), rock_pos_east, rock_pos_north, rock_east_gps, rock_north_gps);
+legend('Fusion Position', 'Acceleration', 'GPS');
 xlabel('East (m)');
 ylabel('North (m)');
 axis equal;
@@ -174,8 +172,16 @@ axis equal;
 subplot(2,1,2);
 hold on;
 
-plot (North_utm_position, East_utm_position);
+plot (East_utm_position, North_utm_position);
 legend('GPS UTM Position');
 xlabel('East (m)');
 ylabel('North (m)');
+axis equal;
+
+figure
+plot3(kal_xe_stor(:,1), kal_xn_stor(:,1), kal_x_stor(:,1), rock_east_gps, rock_north_gps, rock_alt_gps);
+legend('Fusion Position', 'GPS');
+xlabel('East (m)');
+ylabel('North (m)');
+zlabel('Altitude (m)');
 axis equal;
