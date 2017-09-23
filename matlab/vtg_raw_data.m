@@ -64,3 +64,5 @@ zlabel('Z Acceleration');
 North_utm_position = (x(:,1)- x(1,1));
 East_utm_position = (y(:,1)- y(1,1));
 plot (North_utm_position, East_utm_position);
+xlabel('East (m)');
+ylabel('North (m)');
