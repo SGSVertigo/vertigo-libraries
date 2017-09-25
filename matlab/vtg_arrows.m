@@ -1,4 +1,5 @@
 % rotm is far superior as it doesn't use any non vanilla functions
+% Luke Gonsaves 2017, superior leader of vertigo. Bless this mess.
 % Tom Ronayne 2017, super boffin and rotm enthusiast
 % vtg_raw_data.m => rotmftw.m
 % In the messiest way possible, uses Euler angles to rotate imu into the
