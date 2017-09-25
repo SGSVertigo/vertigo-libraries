@@ -23,6 +23,8 @@ rock_accel = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 
 % Find the gps
 rock_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
+rock_north_gps = North_utm_position(tstartidx_gps:tendidx_gps, 1);
+rock_east_gps = East_utm_position(tstartidx_gps:tendidx_gps, 1);
 rock_alt_gps = gpsdata(tstartidx_gps:tendidx_gps, 5);
 rock_alt_gps = rock_alt_gps - rock_alt_gps(1);
 
@@ -101,18 +103,6 @@ legend('Fusion Est. Altitude', 'IMU Only', 'GPS Samples', 'Launch Alt');
 xlabel('Time (s)');
 ylabel('Altitude (m)');
 
-% Accurate 1D Path
-figure
-plot(rock_merged(:,1), kal_x_stor(:,1), rock_merged(:,1), smooth(kal_x_stor(:,1), 0.15, 'moving'), rock_merged(:,1), smooth(kal_x_stor(:,1), 0.15, 'lowess'));
-dy = 2;  % 2x2x2m error in gps
-hold on;
-fill([rock_merged(:,1);flipud(rock_merged(:,1))],[kal_x_stor(:,1)-dy;flipud(kal_x_stor(:,1)+dy)],[.9 .9 .9],'linestyle','none');
-line(rock_merged(:,1), kal_x_stor(:,1))
-hold off;
-alpha(.65);
-legend('Fusion Est. Altitude', 'Moving Average Filter', 'Local Regression 2nd Degree Polynomial Filter');
-xlabel('Time (s)');
-ylabel('Altitude (m)');
 %subplot(2,1,2);
 %hold on;
 %stairs(rock_merged(:,1), kal_x_stor(:,4));

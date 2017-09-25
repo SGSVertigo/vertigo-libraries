@@ -2,8 +2,9 @@
 %
 % Jon Sowman 2017
 % jon+vertigo@jonsowman.com
-
 % Get raw data
+format long; 
+format longG;
 [csvfile, csvpath] = uigetfile('*.csv');
 csvdata = csvread([csvpath csvfile]);
 
@@ -55,3 +56,13 @@ plot3(imudata(:,3), imudata(:,4), imudata(:,5));
 xlabel('X Acceleration');
 ylabel('Y Acceleration');
 zlabel('Z Acceleration');
+
+[x,y,zone] = ll2utm(gpsdata(:,4),gpsdata(:,3)); 
+%[x,y,zone] = ll2utm(lat,lon); % do the job! 
+
+%gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
+North_utm_position = (x(:,1)- x(1,1));
+East_utm_position = (y(:,1)- y(1,1));
+plot (East_utm_position, North_utm_position);
+xlabel('East (m)');
+ylabel('North (m)');
