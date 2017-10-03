@@ -12,12 +12,12 @@ for i = 1:length(imudata)
     quat_int = interp1(quatdata(:,1), quatdata(:, 3:6), imudata(i,1));
     a = [0 imudata(i, 3:5)];
     g = [0 imudata(i, 6:8)];
-    aa = vtg_quatmultiply(vtg_quatmultiply(quat_int, a), quatconj(quat_int));
+    aa = quatmultiply(quatmultiply(quat_int, a), quatconj(quat_int));
     accel_ned(i, :) = aa(2:4);
-    gg= vtg_quatmultiply(vtg_quatmultiply(quat_int, g), quatconj(quat_int));
+    gg= quatmultiply(quatmultiply(quat_int, g), quatconj(quat_int));
     gyro_ned(i, :) = gg(2:4);
 end
-
+figure
 % Plot
 subplot(4,1,1);
 plot(imudata(:,1), imudata(:, 3:5));
