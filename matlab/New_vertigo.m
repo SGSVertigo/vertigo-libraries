@@ -8,8 +8,8 @@
 % Luke Gonsalves
 
 % The start and end times in the data to process
-window_start = 55; % Rocket Default 55 Seconds
-window_end = 85; % Rocket Default 85 Seconds
+window_start = 0; % Rocket Default 55 Seconds
+window_end =  133;% Rocket Default 85 Seconds
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
@@ -22,6 +22,7 @@ data_time = imudata(tstartidx:tendidx, 1);
 data_accel_down = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
+
 
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
@@ -166,22 +167,22 @@ ylabel('East (m)');
 %stairs(rock_merged(:,1), kal_x_stor(:,4));
 
 figure
-subplot(2,1,1);
+%subplot(2,1,1);
 hold on;
-plot(kal_xe_stor(:,1), kal_xn_stor(:,1), data_pos_east, data_pos_north, position_east_gps, position_north_gps);
-legend('Fusion Position', 'Acceleration', 'GPS');
+plot(kal_xe_stor(:,1), kal_xn_stor(:,1), position_east_gps, position_north_gps);
+legend('Fusion Position', 'GPS');
 xlabel('East (m)');
 ylabel('North (m)');
 axis equal;
 
-subplot(2,1,2);
-hold on;
+%subplot(2,1,2);
+%hold on;
 
-plot (East_utm_position, North_utm_position);
-legend('GPS UTM Position');
-xlabel('East (m)');
-ylabel('North (m)');
-axis equal;
+%plot (East_utm_position, North_utm_position);
+%legend('GPS UTM Position');
+%xlabel('East (m)');
+%ylabel('North (m)');
+%axis equal;
 
 figure
 plot3(kal_xe_stor(:,1), kal_xn_stor(:,1), kal_x_stor(:,1), position_east_gps, position_north_gps, data_alt_gps);
@@ -204,3 +205,19 @@ plot (smooth_east_position,smooth_north_position);
 legend('smoothFusion Position');
 xlabel('smooth East (m)');
 ylabel('smooth North (m)');
+
+% Plot quiver plot showing accelerations for each position
+figure;
+%north_accel_elements =  data_accel_north(1:10:end,:);
+%east_accel_elements =  data_accel_east(1:10:end,:);
+north_accel_elements = smooth(kal_xn_stor(:,3));
+east_accel_elements = smooth(kal_xe_stor(:,3));
+positionsE = smooth_east_position(:,:);
+positionsN = smooth_north_position(:,:);
+quiv_ds_rate = 50; % downsample rate
+quiver(decimate(positionsE, quiv_ds_rate), ...
+    decimate(positionsN, quiv_ds_rate), ...
+    decimate(east_accel_elements, quiv_ds_rate), ...
+    decimate(north_accel_elements, quiv_ds_rate));
+
+
