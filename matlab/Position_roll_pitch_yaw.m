@@ -5,11 +5,12 @@
 %
 % Jon Sowman 2017
 % jon+vertigo@jonsowman.com
+% jcostello@suttonmail.org
 % Luke Gonsalves
 
 % The start and end times in the data to process
-window_start = 78; % Rocket Default 55 Seconds
-window_end =  83;% Rocket Default 85 Seconds
+window_start = 0; % Start of time window Seconds
+window_end =  120;% End of time window 85 Seconds
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
@@ -17,8 +18,10 @@ tendidx = find(imudata(:,1) > window_end, 1);
 tstartidx_gps = find(gpsdata(:,1) > window_start, 1);
 tendidx_gps = find(gpsdata(:,1) > window_end, 1);
 
+
 % Find the accel
 data_time = imudata(tstartidx:tendidx, 1);
+euldata_window = euldata (tstartidx:tendidx, :)
 data_accel_down = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
@@ -133,99 +136,33 @@ for i = 1:length(data_merged)
     kal_xe_stor(i, :) = xe;
 end
 
-figure
-% Plot
-clf;
-subplot(3,1,1);
-hold on;
-stairs(data_merged(:,1), kal_x_stor(:,1));
-stairs(data_time, data_pos);
-scatter(data_time_gps, data_alt_gps);
-line([min(data_time) max(data_time)], [0 0], 'LineStyle', '--', 'Color', 'black');
-legend('Fusion Est. Altitude', 'IMU Only', 'GPS Samples', 'Launch Alt');
-xlabel('Time (s)');
-ylabel('Altitude (m)');
-
-subplot(3,1,2);
-hold on;
-stairs(data_merged(:,1), kal_xn_stor(:,1));
-stairs(data_time, data_pos_north);
-scatter(data_time_gps, position_north_gps);
-legend('Fusion Est. North', 'IMU Only', 'GPS Samples');
-xlabel('Time (s)');
-ylabel('North (m)');
-
-subplot(3,1,3);
-hold on;
-stairs(data_merged(:,1), kal_xe_stor(:,1));
-stairs(data_time, data_pos_east);
-scatter(data_time_gps, position_east_gps);
-legend('Fusion Est. East', 'IMU Only', 'GPS Samples');
-xlabel('Time (s)');
-ylabel('East (m)');
-%subplot(2,1,2);
-%hold on;
-%stairs(rock_merged(:,1), kal_x_stor(:,4));
-
-figure
-%subplot(2,1,1);
-hold on;
-plot(kal_xe_stor(:,1), kal_xn_stor(:,1), position_east_gps, position_north_gps);
-legend('Fusion Position', 'GPS');
-xlabel('East (m)');
-ylabel('North (m)');
-axis equal;
-
-%subplot(2,1,2);
-%hold on;
-
-%plot (East_utm_position, North_utm_position);
-%legend('GPS UTM Position');
-%xlabel('East (m)');
-%ylabel('North (m)');
-%axis equal;
-
-figure
-plot3(kal_xe_stor(:,1), kal_xn_stor(:,1), kal_x_stor(:,1), position_east_gps, position_north_gps, data_alt_gps);
-legend('Fusion Position', 'GPS');
-xlabel('East (m)');
-ylabel('North (m)');
-zlabel('Altitude (m)');
-axis equal;
-
-figure
-plot (kal_xe_stor(:,1), kal_xn_stor(:,1));
-legend('Fusion Position');
-xlabel('East (m)');
-ylabel('North (m)');
-
-%smooth_east_position = smooth(kal_xe_stor(:,1));
-%smooth_north_position = smooth (kal_xn_stor(:,1));
-%figure
-%plot (smooth_east_position,smooth_north_position);
-%legend('smoothFusion Position');
-%xlabel('smooth East (m)');
-%ylabel('smooth North (m)');
-
-figure
-north_accel_elements =  data_accel_north(1:10:end,:);
-east_accel_elements =  data_accel_east(1:10:end,:);
-positionsE = kal_xe_stor(1:11:end,1);
-positionsN = kal_xn_stor(1:11:end,1);
-quiver(positionsE,positionsN,east_accel_elements,north_accel_elements);
 
 
-figure
-north_accel_elements =  data_accel_north(1:10:end,:);
-east_accel_elements =  data_accel_east(1:10:end,:);
-down_accel_elements = data_accel_down(1:10:end,:);
 
-%positionsE = smooth_east_position(1:11:end,:);
-%positionsN = smooth_north_position(1:11:end,:);
-%positionsD = kal_x_stor(1:11:end,1);
-quiver (positionsE,positionsN,     east_accel_elements, north_accel_elements);
 
-legend('Acceleraion vectors');
-xlabel('East (m)');
-ylabel(' North (m)');
-%zlabel(' Down (m)');
+
+%smoothing the data
+smooth_east_position = smooth(kal_xe_stor(:,1));
+smooth_north_position = smooth (kal_xn_stor(:,1));
+figure;
+
+plot (smooth_east_position,smooth_north_position);
+legend('smooth Fusion Position');
+xlabel('East Postion(m)');
+ylabel('North Position(m)');
+
+quiv_ds_rate = 20; % downsample rate
+
+
+
+figure;
+[xy,yy] = pol2cart(euldata_window(:,3)*2*pi/360,5);
+
+quiver (decimate(smooth_east_position, quiv_ds_rate), ...
+    decimate(smooth_north_position, quiv_ds_rate), ...
+    decimate(xy, 18), ...
+    decimate(yy, 18));
+
+legend('Yaw at position');
+xlabel('East Position(m)');
+ylabel('North Position(m)');
