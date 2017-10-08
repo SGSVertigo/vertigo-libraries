@@ -9,6 +9,9 @@
 % Luke Gonsalves
 
 % The start and end times in the data to process
+%window_start = 0; % Start of time window Seconds
+%window_end =  125;% End of time window 85 Seconds
+
 
 prompt = 'What time do you wish to start analysis from? ';
 window_start = input(prompt);
@@ -16,8 +19,7 @@ prompt = 'What time do you wish to end the analysis? ';
 window_end = input(prompt)
 
 
-%window_start = 0; % Start of time window Seconds
-%window_end = 125;% End of time window 85 Seconds
+
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
@@ -34,7 +36,7 @@ data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 
-% Find the gps in UTM
+% Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
 [x,y,zone] = ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
@@ -44,9 +46,9 @@ East_utm_position = (y(:,1)- y(1,1));
 %plot (North_utm_position, East_utm_position);
 
 
-position_north_gps = North_utm_position
+position_north_gps = North_utm_position 
 position_north_gps = position_north_gps - position_north_gps(1);
-position_east_gps = East_utm_position
+position_east_gps = East_utm_position 
 position_east_gps = position_east_gps - position_east_gps(1);
 data_alt_gps = gpsdata(tstartidx_gps:tendidx_gps, 5);
 data_alt_gps = data_alt_gps - data_alt_gps(1);
@@ -92,55 +94,55 @@ tc = data_time(1);
 
 % Run Kalman
 for i = 1:length(data_merged)
-% Find dt since samples can possibly be dropped
-dt = data_merged(i, 1) - tc;
-tc = data_merged(i, 1);
+    % Find dt since samples can possibly be dropped
+    dt = data_merged(i, 1) - tc;
+    tc = data_merged(i, 1);
+    
+    % Find DT model
+    F = [1 dt 0 0; 0 1 dt 0; 0 0 1 -1; 0 0 0 1];
+    
+    % Predict
+    xp = F * x; % no inputs
+    xpn = F * xn;
+    xpe = F * xe;
+    Pp = F * P * F' + Q;
+    
+    % Update for accel
+    if data_merged(i, 2) == 1
+        y = data_accel_down(data_merged(i, 3)) - Ha * x;
+       
+        yn = data_accel_north(data_merged(i, 3)) - Ha * xn; % North
+        ye = data_accel_east(data_merged(i, 3)) - Ha * xe; % East
 
-% Find DT model
-F = [1 dt 0 0; 0 1 dt 0; 0 0 1 -1; 0 0 0 1];
+        S = Ha * P * Ha' + Ra;
+        K = Pp * Ha' * 1/S;
+        x = xp + K * y;
+        
+        xn = xpn + K * yn; % North
+        xe = xpe + K * ye; % East
 
-% Predict
-xp = F * x; % no inputs
-xpn = F * xn;
-xpe = F * xe;
-Pp = F * P * F' + Q;
+        P = (eye(4) - K * Ha) * Pp;
+    elseif data_merged(i, 2) == 2
+    % Update for GPS
+        y = data_alt_gps(data_merged(i, 3)) - Hg * x;
+        
+        yn = position_north_gps(data_merged(i, 3)) - Hg * xn; % North
+        ye = position_east_gps(data_merged(i, 3)) - Hg * xe; % East
+             
+        S = Hg * P * Hg' + Rg;
+        K = Pp * Hg' * 1/S;
+        x = xp + K * y;
+        
+        xn = xpn + K * yn; % North
+        xe = xpe + K * ye; % East
 
-% Update for accel
-if data_merged(i, 2) == 1
-y = data_accel_down(data_merged(i, 3)) - Ha * x;
-
-yn = data_accel_north(data_merged(i, 3)) - Ha * xn; % North
-ye = data_accel_east(data_merged(i, 3)) - Ha * xe; % East
-
-S = Ha * P * Ha' + Ra;
-K = Pp * Ha' * 1/S;
-x = xp + K * y;
-
-xn = xpn + K * yn; % North
-xe = xpe + K * ye; % East
-
-P = (eye(4) - K * Ha) * Pp;
-elseif data_merged(i, 2) == 2
-% Update for GPS
-y = data_alt_gps(data_merged(i, 3)) - Hg * x;
-
-yn = position_north_gps(data_merged(i, 3)) - Hg * xn; % North
-ye = position_east_gps(data_merged(i, 3)) - Hg * xe; % East
-
-S = Hg * P * Hg' + Rg;
-K = Pp * Hg' * 1/S;
-x = xp + K * y;
-
-xn = xpn + K * yn; % North
-xe = xpe + K * ye; % East
-
-P = (eye(4) - K * Hg) * Pp;
-end
-
-% Store
-kal_x_stor(i, :) = x;
-kal_xn_stor(i, :) = xn;
-kal_xe_stor(i, :) = xe;
+        P = (eye(4) - K * Hg) * Pp;
+    end
+    
+    % Store
+    kal_x_stor(i, :) = x;
+    kal_xn_stor(i, :) = xn;
+    kal_xe_stor(i, :) = xe;
 end
 
 
@@ -158,6 +160,13 @@ axis equal;
 %smoothing the data
 smooth_east_position = smooth(kal_xe_stor(:,1));
 smooth_north_position = smooth (kal_xn_stor(:,1));
+smooth_down_position = smooth (kal_x_stor(:,1));
+
+total_time = [ data_time ; data_time_gps];
+%sort in time chronological order
+stotal_time = sort(total_time);
+
+
 figure;
 
 comet (smooth_east_position,smooth_north_position);
@@ -177,10 +186,12 @@ positionsN = smooth_north_position(:,:);
 figure;
 hold on;
 quiv_ds_rate = 50; % downsample rate
+
+
 quiver(decimate(positionsE, quiv_ds_rate), ...
-decimate(positionsN, quiv_ds_rate), ...
-decimate(east_accel_elements, quiv_ds_rate), ...
-decimate(north_accel_elements, quiv_ds_rate));
+    decimate(positionsN, quiv_ds_rate), ...
+    decimate(east_accel_elements, quiv_ds_rate), ...
+    decimate(north_accel_elements, quiv_ds_rate));
 legend('Acceleration at position');
 xlabel('East Position (m)');
 ylabel('North Position (m)');
@@ -188,18 +199,18 @@ ylabel('North Position (m)');
 hold off;
 figure;
 quiver (decimate(positionsE, quiv_ds_rate), ...
-decimate(positionsN, quiv_ds_rate), ...
-decimate(east_vel_elements, quiv_ds_rate), ...
-decimate(north_vel_elements, quiv_ds_rate));
+    decimate(positionsN, quiv_ds_rate), ...
+    decimate(east_vel_elements, quiv_ds_rate), ...
+    decimate(north_vel_elements, quiv_ds_rate));
 legend('Velocity at position');
 xlabel('East Position(m)');
 ylabel('North Position(m)');
 
-total_time = [ data_time ; data_time_gps]
-total_time = sort(total_time)
 
-figure
-plot(total_time, kal_xn_stor(:,1),total_time, kal_xn_stor(:,2),total_time, kal_xn_stor(:,3))
+figure;
+plot(stotal_time, kal_xn_stor(:,1),stotal_time, kal_xn_stor(:,2),stotal_time, kal_xn_stor(:,3))
 legend('Position', 'Velocity' , 'Acceleration');
 xlabel('Time(s)');
 ylabel('m,m/s,m/s2 ');
+
+
