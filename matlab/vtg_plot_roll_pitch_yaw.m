@@ -181,7 +181,7 @@ as = 0.4;
 
 %decimate_rate  = dr
 dr = 50;
-dec_data=utl_decimatrix(all_data);
+dec_data=utl_decimatrix(all_data,dr);
 
 
 %quiver plot yaw
