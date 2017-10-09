@@ -1,4 +1,4 @@
-function [ eul ] = vtg_quat2eul( q )
+function [ eul ] = utl_quat2eul( q )
 %VTG_QUAT2EUL
 %
 % This file is part of the Vertigo project

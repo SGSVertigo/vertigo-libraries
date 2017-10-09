@@ -1,4 +1,4 @@
-function p = quatmultiply(q, r)
+function p = utl_quatmultiply(q, r)
 %QUATMULTIPLY Multiply two quaternions.
 % From https://raw.githubusercontent.com/dhr/matlab-tools/master/quaternions/quatmultiply.m
 %   P = QUATMULTIPLY(Q, R) multiplies quaternions Q and R, returning their

@@ -26,7 +26,7 @@ quatdata(:,1) = (quatdata(:,1) - quatdata(1,1)) / 1000;
 % Do quaternion->Euler conversion
 euldata = zeros(length(quatdata), 3);
 for i = 1:length(quatdata)
-euldata(i,:) = vtg_quat2eul(quatdata(i,3:6));
+euldata(i,:) = utl_quat2eul(quatdata(i,3:6));
 end
 %euldata = vtg_quat2eul(quatdata);
 
@@ -48,9 +48,9 @@ for i = 1:length(imudata)
 quat_int = interp1(quatdata(:,1), quatdata(:, 3:6), imudata(i,1));
 a = [0 imudata(i, 3:5)];
 g = [0 imudata(i, 6:8)];
-aa = quatmultiply(quatmultiply(quat_int, a), quatconj(quat_int));
+aa = utl_quatmultiply(utl_quatmultiply(quat_int, a), utl_quatconj(quat_int));
 accel_ned(i, :) = aa(2:4);
-gg= quatmultiply(quatmultiply(quat_int, g), quatconj(quat_int));
+gg= utl_quatmultiply(utl_quatmultiply(quat_int, g), utl_quatconj(quat_int));
 gyro_ned(i, :) = gg(2:4);
 end
 
