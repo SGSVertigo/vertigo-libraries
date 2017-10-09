@@ -3,8 +3,9 @@
 % Jon Sowman 2017
 % jon+vertigo@jonsowman.com
 % Luke Gonsalves 2017
+% Ammendments by Ben Kaye
 % Get raw data
-[csvfile, csvpath] = uigetfile('*.csv');
+[csvfile, csvpath] = uigetfile('logs/*.csv', 'Vertigo Data Files');
 csvdata = csvread([csvpath csvfile]);
 % for greater gps resolution use command below
 %csvdata = dlmread([csvpath csvfile]);
