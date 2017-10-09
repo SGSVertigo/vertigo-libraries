@@ -166,21 +166,33 @@ roll_pitch_yaw_t = [rollx rolly pitchx pitchy yawx yawy data_time];
 
 %joining all data and equalising matrix sizes
 for z = 1 :length(NEDT)    
-    for  i = 1: length(data_time)
-
-    
-    if roll_pitch_yaw_t(i,7) == NEDT(z,4)
-        all_data (i,:) = horzcat(NEDT (z,:), roll_pitch_yaw_t(i,:));
+    for  i = 1: length(data_time)    
+        if roll_pitch_yaw_t(i,7) == NEDT(z,4)
+            all_data (i,:) = horzcat(NEDT (z,:), roll_pitch_yaw_t(i,:));
+        end
     end
-end
 end
 
 %all_data holds [N E D T Rx Ry Px Py Yx Yy T]
 
-%decimate_rate  = dr
-dr = 50;
+
 %arrow_size = as
 as = 0.4;
+
+%decimate_rate  = dr
+dr = 50;
+
+% The following block is intended to decimate the matrix column by column,
+% to avoid writing decimate for each use, but it throws error: 
+% Assignment has more non-singleton rhs dimensions than
+% non-singleton subscripts. /Ben
+%
+% [m,n]=size(all_data);
+% dec_data;
+% for i = 1:n
+%     dec_dat=decimate(all_data(:,i),dr);
+% end
+
 
 %quiver plot yaw
 figure;
@@ -221,3 +233,18 @@ plot(data_time, euldata_window(:,1:3));
 xlabel('Time (s)');
 ylabel('Orientation (deg)');
 legend('roll', 'pitch', 'yaw');
+
+figure('Name','3D Orientation vs. Position');
+%lines if my decimate worked
+% plot3(dec_data(:,1),dec_data(:,2),dec_data(:,3));
+% quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,7),dec_data(:,5),dec_data(:,9))
+quiver3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr),...
+    decimate(all_data(:,7),dr),decimate(all_data(:,5),dr),decimate(all_data(:,9),dr),as);
+hold on
+plot3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr));
+legend('Orientation at Position');
+xlabel('East Displacement /m');
+ylabel('North Displacement /m');
+zlabel('Vertical Displacement /m');
+hold off
+
