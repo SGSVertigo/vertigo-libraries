@@ -1,12 +1,13 @@
 % Vertigo
 % Kalman Filtering in 3 dimensions
-%
+% Roll, pitch Yaw graph plotting
 % This file is part of the VertigoIMU project
 % Yasith Senanayake 8/10
 % Jon Sowman 2017
 % jon+vertigo@jonsowman.com
 % jcostello@suttonmail.org
-% Luke Gonsalves
+
+
 
 % The start and end times in the data to process
 prompt = 'What time do you wish to start analysis from? ';
@@ -17,7 +18,7 @@ window_end = input(prompt);
 % window_start = 0;%sets start time to 0
 % window_end = (size(t)-30)*0.01; %sets end time to end of data
 
-
+all_data = [];
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
 tendidx = find(imudata(:,1) > window_end, 1);
@@ -27,7 +28,7 @@ tendidx_gps = find(gpsdata(:,1) > window_end, 1);
 
 % Find the accel
 data_time = imudata(tstartidx:tendidx, 1);
-euldata_window = euldata (tstartidx:tendidx, :)
+euldata_window = euldata (tstartidx:tendidx, :);
 data_accel_down = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
@@ -35,7 +36,7 @@ data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
-[x,y,zone] = ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
+[x,y,zone] = utl_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
 %gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
 North_utm_position = (x(:,1)- x(1,1));
@@ -43,9 +44,9 @@ East_utm_position = (y(:,1)- y(1,1));
 %plot (North_utm_position, East_utm_position);
 
 
-position_north_gps = North_utm_position 
+position_north_gps = North_utm_position ;
 position_north_gps = position_north_gps - position_north_gps(1);
-position_east_gps = East_utm_position 
+position_east_gps = East_utm_position ;
 position_east_gps = position_east_gps - position_east_gps(1);
 data_alt_gps = gpsdata(tstartidx_gps:tendidx_gps, 5);
 data_alt_gps = data_alt_gps - data_alt_gps(1);
@@ -142,92 +143,100 @@ for i = 1:length(data_merged)
     kal_xe_stor(i, :) = xe;
 end
 
-
-figure
-% 3-d plot of position
-plot3(kal_xe_stor(:,1), kal_xn_stor(:,1), kal_x_stor(:,1), position_east_gps, position_north_gps, data_alt_gps);
-legend('Fusion Position', 'GPS','Location', 'northeast');
-xlabel('East (m)');
-ylabel('North (m)');
-zlabel('Altitude (m)');
-axis equal;
-
-
-
 %smoothing the data
+smooth_down_position = smooth(kal_x_stor(:,1));
 smooth_east_position = smooth(kal_xe_stor(:,1));
 smooth_north_position = smooth (kal_xn_stor(:,1));
-smooth_down_position = smooth (kal_x_stor(:,1));
 
+%Total time samples
 total_time = [ data_time ; data_time_gps];
 %sort in time chronological order
 stotal_time = sort(total_time);
+%all smoothed position data from kalman filter NED with Time - NEDT
+NEDT = [smooth_north_position smooth_east_position smooth_down_position stotal_time];
 
-north_accel_elements = smooth(kal_xn_stor(:,3));
-east_accel_elements = smooth(kal_xe_stor(:,3));
-down_accel_elements = smooth(kal_x_stor(:,3));
-north_vel_elements = smooth (kal_xn_stor(:,2));
-east_vel_elements = smooth (kal_xe_stor(:,2));
-down_vel_elements = smooth (kal_x_stor(:,2));
+% Convert polar coords to cartesian.  given polar length = quiver_length
+quiver_length = 5;
+[pitchx,pitchy] = pol2cart(euldata_window(:,1)*2*pi/360,quiver_length);
+[rollx,rolly] = pol2cart(euldata_window(:,2)*2*pi/360,quiver_length);
+[yawx,yawy] = pol2cart(euldata_window(:,3)*2*pi/360,quiver_length);
 
-positionsE = smooth_east_position(:,:);
-positionsN = smooth_north_position(:,:);
-positionsD = smooth_down_position(:,:);
+%Cartesian vectors for roll, pitch and yaw with time
+roll_pitch_yaw_t = [rollx rolly pitchx pitchy yawx yawy data_time];
 
-quiv_ds_rate = 50; % downsample rate
-ars = 1.2; %arrow size
+%joining all data and equalising matrix sizes
+for z = 1 :length(NEDT)    
+    for  i = 1: length(data_time)    
+        if roll_pitch_yaw_t(i,7) == NEDT(z,4)
+            all_data (i,:) = horzcat(NEDT (z,:), roll_pitch_yaw_t(i,:));
+        end
+    end
+end
 
-% % Plot quiver plot showing acceleration (3D) for each position
-% figure
-% quiver3(decimate(positionsE, quiv_ds_rate), ...
-%     decimate(positionsN, quiv_ds_rate), ...
-%     decimate(positionsD, quiv_ds_rate), ...
-%     decimate(east_accel_elements, quiv_ds_rate), ...
-%     decimate(north_accel_elements, quiv_ds_rate), ...
-%     decimate(down_accel_elements, quiv_ds_rate),ars);
-% hold on
-% plot3 (smooth_east_position,smooth_north_position, smooth_down_position);
-% legend('Acceleration at position', 'Location', 'northeast');
-% xlabel('East Postion(m)');
-% ylabel('North Position(m)');
-% zlabel('Down Position(m)');
-% axis image
-% grid off
-% hold off;
-
-% Plot quiver plot showing acceleration (2D) for each position
-figure
-quiver(decimate(positionsE, quiv_ds_rate), ...
-    decimate(positionsN, quiv_ds_rate), ...
-    decimate(east_accel_elements, quiv_ds_rate), ...
-    decimate(north_accel_elements, quiv_ds_rate),ars);
-hold on
-plot (smooth_east_position,smooth_north_position);
-legend('Acceleration at position');
-xlabel('East Postion(m)');
-ylabel('North Position(m)');
-axis equal
-hold off;
+%all_data holds [N E D T Rx Ry Px Py Yx Yy T]
 
 
+%arrow_size = as
+as = 0.4;
 
+%decimate_rate  = dr
+dr = 50;
+dec_data=utl_decimatrix(all_data,dr);
+
+
+%quiver plot yaw
 figure;
-quiver (decimate(positionsE, quiv_ds_rate), ...
-    decimate(positionsN, quiv_ds_rate), ...
-    decimate(east_vel_elements, quiv_ds_rate), ...
-    decimate(north_vel_elements, quiv_ds_rate),ars);
+quiver (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr), ...
+    decimate(all_data (:,9),dr),decimate(all_data (:,10),dr),as);
 hold on
-plot (smooth_east_position,smooth_north_position);
-legend('Velocity at position');
-xlabel('East Postion(m)');
+plot (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr));
+legend('Yaw at position');
+xlabel('East Position(m)');
 ylabel('North Position(m)');
 hold off
 
 
+%quiver plot roll
 figure;
-plot(stotal_time, kal_xn_stor(:,1),stotal_time, kal_xn_stor(:,2),stotal_time, kal_xn_stor(:,3))
-legend('Position', 'Velocity' , 'Acceleration');
-xlabel('Time(s)');
-ylabel('m, m/s, m/s^2');
+quiver (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr), ...
+    decimate(all_data (:,5),dr),decimate(all_data (:,6),dr),as);
+hold on
+plot (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr));
+legend('Roll at position');
+xlabel('East Position(m)');
+ylabel('Down Position(m)');
+hold off
 
+%quiver plot pitch
+figure;
+quiver (decimate(all_data (:,1),dr),decimate(all_data (:,3),dr), ...
+    decimate(all_data (:,7),dr),decimate(all_data (:,8),dr),as);
+hold on
+plot(decimate(all_data (:,1),dr),decimate(all_data (:,3),dr));
+legend('Pitch at position');
+xlabel('North Position(m)');
+ylabel('Down Position(m)');
+hold off
+
+figure;
+plot(data_time, euldata_window(:,1:3));
+xlabel('Time (s)');
+ylabel('Orientation (deg)');
+legend('roll', 'pitch', 'yaw');
+
+figure('Name','3D Orientation vs. Position');
+%lines if my decimate worked
+
+quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,7),dec_data(:,5),dec_data(:,9),as)
+% quiver3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr),...
+%     decimate(all_data(:,7),dr),decimate(all_data(:,5),dr),decimate(all_data(:,9),dr),as);
+hold on
+% plot3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr));
+plot3(dec_data(:,1),dec_data(:,2),dec_data(:,3));
+legend('Orientation at Position');
+xlabel('East Displacement /m');
+ylabel('North Displacement /m');
+zlabel('Vertical Displacement /m');
+daspect([1 1 1])
+hold off
 

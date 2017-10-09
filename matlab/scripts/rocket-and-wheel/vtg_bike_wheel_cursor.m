@@ -1,4 +1,3 @@
-% Luke Gonsalves
 % Plot each corrected displacement vs time to find cursor data.
 figure
 subplot(3,1,1)
@@ -75,8 +74,7 @@ plot (Time, (Corrected_Down - pvE'));
 
 figure
 %Plot the displacements vs each other
-span = 0.15;
-plot3 ((smooth(Corrected_East - pvE', span, 'moving')),(smooth(Corrected_North - pvN', span, 'moving')),(smooth(Corrected_Down - pvD', span, 'moving')))
+plot3 ((smooth(Corrected_East - pvE', 'moving')),(smooth(Corrected_North - pvN', 'moving')),(smooth(Corrected_Down - pvD', 'moving')))
 xlabel('East Displacement');
 ylabel('North Displacement');
 zlabel('Down Displacement');
