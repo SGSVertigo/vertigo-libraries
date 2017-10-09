@@ -227,16 +227,16 @@ legend('roll', 'pitch', 'yaw');
 figure('Name','3D Orientation vs. Position');
 %lines if my decimate worked
 
-quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,7),dec_data(:,5),dec_data(:,9),as)
-% quiver3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr),...
-%     decimate(all_data(:,7),dr),decimate(all_data(:,5),dr),decimate(all_data(:,9),dr),as);
+
+%all_data holds [N E D T Rx Ry Px Py Yx Yy T ]
+%all_data holds [1 2 3 4 5  6  7  8  9  10 11]
+quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,5),dec_data(:,7),dec_data(:,9),as)
 hold on
-% plot3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr));
 plot3(dec_data(:,1),dec_data(:,2),dec_data(:,3));
 legend('Orientation at Position');
-xlabel('East Displacement /m');
-ylabel('North Displacement /m');
-zlabel('Vertical Displacement /m');
+xlabel('North Displacement /m | Roll');
+ylabel('East Displacement /m | Pitch');
+zlabel('Vertical Displacement /m | Yaw');
 daspect([1 1 1])
 hold off
 
