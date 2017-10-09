@@ -9,8 +9,10 @@
 % Luke Gonsalves
 
 % The start and end times in the data to process
-window_start = 0; % Start of time window Seconds
-window_end =  120;% End of time window 85 Seconds
+prompt = 'What time do you wish to start analysis from? ';
+window_start = input(prompt);
+prompt = 'What time do you wish to end the analysis? ';
+window_end = input(prompt)
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);

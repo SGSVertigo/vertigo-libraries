@@ -2,7 +2,7 @@
 % Kalman Filtering in 3 dimensions
 % Roll, pitch Yaw graph plotting
 % This file is part of the VertigoIMU project
-%
+% Yasith Senanayake 8/10
 % Jon Sowman 2017
 % jon+vertigo@jonsowman.com
 % jcostello@suttonmail.org
@@ -14,6 +14,9 @@ prompt = 'What time do you wish to start analysis from? ';
 window_start = input(prompt);
 prompt = 'What time do you wish to end the analysis? ';
 window_end = input(prompt);
+
+% window_start = 0;%sets start time to 0
+% window_end = (size(t)-30)*0.01; %sets end time to end of data
 
 all_data = [];
 % Extract the bit of data we want to look at
@@ -33,7 +36,7 @@ data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
-[x,y,zone] = ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
+[x,y,zone] = utl_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
 %gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
 North_utm_position = (x(:,1)- x(1,1));
@@ -166,7 +169,7 @@ for z = 1 :length(NEDT)
     for  i = 1: length(data_time)
 
     
-    if roll_pitch_yaw_t(i,7) == NEDT(z,4);
+    if roll_pitch_yaw_t(i,7) == NEDT(z,4)
         all_data (i,:) = horzcat(NEDT (z,:), roll_pitch_yaw_t(i,:));
     end
 end
@@ -176,42 +179,44 @@ end
 
 %decimate_rate  = dr
 dr = 50;
-
+%arrow_size = as
+as = 0.4;
 
 %quiver plot yaw
 figure;
-comet (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr));
-xlabel('East Position(m)');
-ylabel('North Position(m)');
-figure;
-quiver (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr),decimate(all_data (:,9),dr),decimate(all_data (:,10),dr));
+quiver (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr), ...
+    decimate(all_data (:,9),dr),decimate(all_data (:,10),dr),as);
+hold on
+plot (decimate(all_data (:,2),dr),decimate(all_data (:,1),dr));
 legend('Yaw at position');
 xlabel('East Position(m)');
 ylabel('North Position(m)');
+hold off
+
 
 %quiver plot roll
 figure;
+quiver (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr), ...
+    decimate(all_data (:,5),dr),decimate(all_data (:,6),dr),as);
+hold on
 plot (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr));
-xlabel('East Position(m)');
-ylabel('Down Position(m)');
-figure;
-quiver (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr),decimate(all_data (:,5),dr),decimate(all_data (:,6),dr));
 legend('Roll at position');
 xlabel('East Position(m)');
 ylabel('Down Position(m)');
+hold off
 
 %quiver plot pitch
 figure;
+quiver (decimate(all_data (:,1),dr),decimate(all_data (:,3),dr), ...
+    decimate(all_data (:,7),dr),decimate(all_data (:,8),dr),as);
+hold on
 plot(decimate(all_data (:,1),dr),decimate(all_data (:,3),dr));
-xlabel('North Position(m)');
-ylabel('Down Position(m)');
-figure;
-quiver (decimate(all_data (:,2),dr),decimate(all_data (:,3),dr),decimate(all_data (:,7),dr),decimate(all_data (:,8),dr));
 legend('Pitch at position');
 xlabel('North Position(m)');
 ylabel('Down Position(m)');
+hold off
 
-
+figure;
 plot(data_time, euldata_window(:,1:3));
 xlabel('Time (s)');
 ylabel('Orientation (deg)');
