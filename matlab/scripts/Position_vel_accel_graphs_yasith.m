@@ -27,7 +27,7 @@ tendidx_gps = find(gpsdata(:,1) > window_end, 1);
 
 % Find the accel
 data_time = imudata(tstartidx:tendidx, 1);
-euldata_window = euldata (tstartidx:tendidx, :)
+euldata_window = euldata (tstartidx:tendidx, :);
 data_accel_down = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
@@ -35,7 +35,7 @@ data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
-[x,y,zone] = ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
+[x,y,zone] = utl_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
 %gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
 North_utm_position = (x(:,1)- x(1,1));
@@ -43,9 +43,9 @@ East_utm_position = (y(:,1)- y(1,1));
 %plot (North_utm_position, East_utm_position);
 
 
-position_north_gps = North_utm_position 
+position_north_gps = North_utm_position; 
 position_north_gps = position_north_gps - position_north_gps(1);
-position_east_gps = East_utm_position 
+position_east_gps = East_utm_position; 
 position_east_gps = position_east_gps - position_east_gps(1);
 data_alt_gps = gpsdata(tstartidx_gps:tendidx_gps, 5);
 data_alt_gps = data_alt_gps - data_alt_gps(1);
