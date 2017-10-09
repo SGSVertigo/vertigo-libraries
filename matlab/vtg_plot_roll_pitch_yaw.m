@@ -181,17 +181,7 @@ as = 0.4;
 
 %decimate_rate  = dr
 dr = 50;
-
-% The following block is intended to decimate the matrix column by column,
-% to avoid writing decimate for each use, but it throws error: 
-% Assignment has more non-singleton rhs dimensions than
-% non-singleton subscripts. /Ben
-%
-% [m,n]=size(all_data);
-% dec_data;
-% for i = 1:n
-%     dec_dat=decimate(all_data(:,i),dr);
-% end
+dec_data=utl_decimatrix(all_data);
 
 
 %quiver plot yaw
@@ -236,15 +226,17 @@ legend('roll', 'pitch', 'yaw');
 
 figure('Name','3D Orientation vs. Position');
 %lines if my decimate worked
-% plot3(dec_data(:,1),dec_data(:,2),dec_data(:,3));
-% quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,7),dec_data(:,5),dec_data(:,9))
-quiver3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr),...
-    decimate(all_data(:,7),dr),decimate(all_data(:,5),dr),decimate(all_data(:,9),dr),as);
+
+quiver3(dec_data(:,1),dec_data(:,2),dec_data(:,3),dec_data(:,7),dec_data(:,5),dec_data(:,9),as)
+% quiver3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr),...
+%     decimate(all_data(:,7),dr),decimate(all_data(:,5),dr),decimate(all_data(:,9),dr),as);
 hold on
-plot3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr));
+% plot3(decimate(all_data(:,1),dr),decimate(all_data(:,2),dr),decimate(all_data(:,3),dr));
+plot3(dec_data(:,1),dec_data(:,2),dec_data(:,3));
 legend('Orientation at Position');
 xlabel('East Displacement /m');
 ylabel('North Displacement /m');
 zlabel('Vertical Displacement /m');
+daspect([1 1 1])
 hold off
 
