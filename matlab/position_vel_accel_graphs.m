@@ -9,6 +9,9 @@
 % Luke Gonsalves
 
 % The start and end times in the data to process
+%window_start = 0; % Start of time window Seconds
+%window_end =  125;% End of time window 85 Seconds
+
 
 prompt = 'What time do you wish to start analysis from? ';
 window_start = input(prompt);
@@ -16,8 +19,7 @@ prompt = 'What time do you wish to end the analysis? ';
 window_end = input(prompt)
 
 
-%window_start = 0; % Start of time window Seconds
-%window_end =  125;% End of time window 85 Seconds
+
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
@@ -158,6 +160,13 @@ axis equal;
 %smoothing the data
 smooth_east_position = smooth(kal_xe_stor(:,1));
 smooth_north_position = smooth (kal_xn_stor(:,1));
+smooth_down_position = smooth (kal_x_stor(:,1));
+
+total_time = [ data_time ; data_time_gps];
+%sort in time chronological order
+stotal_time = sort(total_time);
+
+
 figure;
 
 comet (smooth_east_position,smooth_north_position);
@@ -177,6 +186,8 @@ positionsN = smooth_north_position(:,:);
 figure;
 hold on;
 quiv_ds_rate = 50; % downsample rate
+
+
 quiver(decimate(positionsE, quiv_ds_rate), ...
     decimate(positionsN, quiv_ds_rate), ...
     decimate(east_accel_elements, quiv_ds_rate), ...
@@ -195,11 +206,11 @@ legend('Velocity at position');
 xlabel('East Position(m)');
 ylabel('North Position(m)');
 
-total_time = [ data_time ; data_time_gps]
-total_time = sort(total_time)
 
-figure 
-plot(total_time, kal_xn_stor(:,1),total_time, kal_xn_stor(:,2),total_time, kal_xn_stor(:,3))
+figure;
+plot(stotal_time, kal_xn_stor(:,1),stotal_time, kal_xn_stor(:,2),stotal_time, kal_xn_stor(:,3))
 legend('Position', 'Velocity' , 'Acceleration');
 xlabel('Time(s)');
 ylabel('m,m/s,m/s2 ');
+
+

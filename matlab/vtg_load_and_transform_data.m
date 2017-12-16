@@ -7,6 +7,9 @@
 % Luke Gonsalves 2017
 %
 
+% Add utilities to path
+addpath(genpath('vtg_utils'));
+
 % Get raw data
 [csvfile, csvpath] = uigetfile('*.csv');
 csvdata = csvread([csvpath csvfile]);
