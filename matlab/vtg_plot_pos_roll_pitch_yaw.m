@@ -9,17 +9,16 @@
 % Luke Gonsalves
 
 % The start and end times in the data to process
-prompt = 'What time do you wish to start analysis from? ';
+prompt = 'From what time do you wish to start analysis? ';
 window_start = input(prompt);
-prompt = 'What time do you wish to end the analysis? ';
-window_end = input(prompt)
+prompt = 'At what time do you wish to end the analysis? ';
+window_end = input(prompt);
 
 % Extract the bit of data we want to look at
 tstartidx = find(imudata(:,1) > window_start, 1);
 tendidx = find(imudata(:,1) > window_end, 1);
 tstartidx_gps = find(gpsdata(:,1) > window_start, 1);
 tendidx_gps = find(gpsdata(:,1) > window_end, 1);
-
 
 % Find the accel
 data_time = imudata(tstartidx:tendidx, 1);
@@ -28,16 +27,14 @@ data_accel_down = (accel_ned(tstartidx:tendidx, 3) - 1) * 9.81;
 data_accel_north = (accel_ned(tstartidx:tendidx, 1) ) * 9.81;
 data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
-
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
-[x,y,zone] = utl_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
+[x,y,zone] = vtg_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
 %gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
 North_utm_position = (x(:,1)- x(1,1));
 East_utm_position = (y(:,1)- y(1,1));
 %plot (North_utm_position, East_utm_position);
-
 
 position_north_gps = North_utm_position; 
 position_north_gps = position_north_gps - position_north_gps(1);
@@ -138,12 +135,7 @@ for i = 1:length(data_merged)
     kal_xe_stor(i, :) = xe;
 end
 
-
-
-
-
-
-%smoothing the data
+%sSmoothing the data
 smooth_east_position = smooth(kal_xe_stor(:,1));
 smooth_north_position = smooth (kal_xn_stor(:,1));
 figure;
@@ -154,8 +146,6 @@ xlabel('East Postion(m)');
 ylabel('North Position(m)');
 
 quiv_ds_rate = 20; % downsample rate
-
-
 
 figure;
 [xy,yy] = pol2cart(euldata_window(:,3)*2*pi/360,5);
@@ -168,3 +158,5 @@ quiver (decimate(smooth_east_position, quiv_ds_rate), ...
 legend('Yaw at position');
 xlabel('East Position(m)');
 ylabel('North Position(m)');
+
+% end

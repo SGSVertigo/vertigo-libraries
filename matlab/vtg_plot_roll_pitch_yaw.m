@@ -36,7 +36,7 @@ data_accel_east = (accel_ned(tstartidx:tendidx, 2) ) * 9.81;
 
 % Find the gps in UTM 
 data_time_gps = gpsdata(tstartidx_gps:tendidx_gps, 1);
-[x,y,zone] = utl_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
+[x,y,zone] = vtg_ll2utm(gpsdata(tstartidx_gps:tendidx_gps,4),gpsdata(tstartidx_gps:tendidx_gps,3));
 %[x,y,zone] = ll2utm(lat,lon); % do the job!
 %gpsdata(:,1) = (gpsdata(:,1) - gpsdata(1,1)) / 1000;
 North_utm_position = (x(:,1)- x(1,1));
