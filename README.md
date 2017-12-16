@@ -1,6 +1,5 @@
 # Vertigo Libraries
-## Libraries and utilities for analysis of data from
-(VertigoIMU)[http://sgsvertigo.github.io].
+## Libraries and utilities for analysis of data from [VertigoIMU](http://sgsvertigo.github.io).
 ##### Created by Luke Gonsalves / Jon Sowman.
 
 ### INSTRUCTIONS
