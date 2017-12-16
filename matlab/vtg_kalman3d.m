@@ -23,7 +23,7 @@ Nstep = length(time);
 
 % State vector: [s_n, s_e, s_d, v_n, v_e, v_d, a_n, a_e, a_d]
 x = zeros(9, 1);
-P = eye(9);
+P = 1e-3 * eye(9);
 
 dt = time(2) - time(1); % This is still a really bad plan
 
