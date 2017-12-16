@@ -1,16 +1,19 @@
-# Vertigo
-## Vertigo Data Logger Analysis Library.
-##### Created by Luke Gonsalves.
+# Vertigo Libraries
+## Libraries and utilities for analysis of data from
+(VertigoIMU)[http://sgsvertigo.github.io].
+##### Created by Luke Gonsalves / Jon Sowman.
 
 ### INSTRUCTIONS
 
-1. Place `vtg_load_data.m` & `vtg_quat2eul.m` from '/matlab' into the same directory.
-2. Run `vtg_load_data.m` inside MATLAB, you will then be prompted to open a log file. _(see below)_
-3. Windows of graphs will then be generated of the processed raw data.
+## Getting Started
 
-### LOGS
+1) Clone this repository to your computer.
+2) Enter the `matlab/` directory and run `vtg_load_and_transform_data`. Select
+a `.csv` log file from VertigoIMU when prompted. This will load data into the
+workspace.
 
-6. - Stationary
-7. - Rotation on a bike wheel
-8. - Model Rocket launch
-> ##### Last Updated: _26/06/17_
+## Logs
+
+Logs are kept in the `logs/` directory. Dump your own log files in here with a
+descriptive name.
+
