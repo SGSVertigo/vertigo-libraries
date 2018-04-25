@@ -14,6 +14,15 @@ addpath(genpath('vtg_utils'));
 [csvfile, csvpath] = uigetfile('*.csv');
 csvdata = csvread([csvpath csvfile]);
 
+% Fix timer rollover
+rollover = 2^32/1e4; % todo: import from config
+all_times = csvdata(:,1);
+delta_times = find(diff(all_times) < 0);
+for i = 1:length(delta_times)
+    all_times(delta_times(i)+1:end) = all_times(delta_times(i)+1:end) ...
+        + rollover;
+end
+
 % Split into GPS and IMU data
 gpsidx = find(csvdata(:,2) == 1);
 imuidx = find(csvdata(:,2) == 2);
