@@ -22,6 +22,7 @@ for i = 1:length(delta_times)
     all_times(delta_times(i)+1:end) = all_times(delta_times(i)+1:end) ...
         + rollover;
 end
+csvdata(:,1) = all_times;
 
 % Split into GPS and IMU data
 gpsidx = find(csvdata(:,2) == 1);
