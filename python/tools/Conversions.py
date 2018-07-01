@@ -26,10 +26,10 @@ class RollPitchYaw(object):
         yaw = math.atan2(t1, t0)
 
         pitch = pitch * (180.0 / math.pi)
-	roll = roll * (180.0 / math.pi)
-	yaw = yaw * (180.0 / math.pi)
+        roll = roll * (180.0 / math.pi)
+        yaw = yaw * (180.0 / math.pi)
 
-        eul = np.array([roll pitch yaw])
+        eul = np.array([roll, pitch, yaw])
         return eul
 
     @staticmethod
