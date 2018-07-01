@@ -1,4 +1,5 @@
 import pandas as pd
+from tools.FileSelector import FileSelector
 
 class FileParser:
 
@@ -23,7 +24,7 @@ class FileParser:
 
     @staticmethod
     def fixRolloverError(dataFrame):
-        rollover_value = 2^32/1e4
+        rollover_value = 2.0**32/1e4
         delta_times = dataFrame.iloc[:,[0]].diff()
         negative_delta_times = delta_times.loc[delta_times[0] < 0]
         for row in negative_delta_times:
