@@ -1,10 +1,13 @@
 name: pyvertigo
 channels:
+  - conda-forge
   - defaults
 dependencies:
-  - blas=1.0=mkl
-  - ca-certificates=2018.03.07=0
+  - ca-certificates=2018.4.16=0
   - certifi=2018.4.16=py36_0
+  - openssl=1.0.2o=0
+  - quaternion=2018.6.18.16.33.12=py36h470a237_0
+  - blas=1.0=mkl
   - intel-openmp=2018.0.3=0
   - libcxx=4.0.1=h579ed51_0
   - libcxxabi=4.0.1=hebd6815_0
@@ -17,7 +20,6 @@ dependencies:
   - ncurses=6.1=h0a44026_0
   - numpy=1.14.5=py36h9bb19eb_1
   - numpy-base=1.14.5=py36ha9ae307_1
-  - openssl=1.0.2o=h26aff7b_0
   - pandas=0.23.1=py36h1702cab_0
   - pip=10.0.1=py36_0
   - python=3.6.6=hc167b69_0
@@ -31,5 +33,7 @@ dependencies:
   - wheel=0.31.1=py36_0
   - xz=5.2.4=h1de35cc_4
   - zlib=1.2.11=hf3cbc9b_2
+  - pip:
+    - numpy-quaternion==2018.6.18.16.33.12
 prefix: /Users/jon/anaconda3/envs/pyvertigo
 
