@@ -20,15 +20,17 @@ class FileParser:
 
     @staticmethod
     def getDataType(dataFrame, type_interger_identifier):
-        return dataFrame.loc[dataFrame[1] == type_interger_identifier]
+        return dataFrame.loc[dataFrame[dataFrame.columns[1]] == type_interger_identifier]
 
     @staticmethod
     def fixRolloverError(dataFrame):
         rollover_value = 2.0**32/1e4
-        delta_times = dataFrame.iloc[:,[0]].diff()
-        negative_delta_times = delta_times.loc[delta_times[0] < 0]
-        for row in negative_delta_times:
-            dataFrame = dataFrame[:,row.index():-1] + rollover_value
+        delta_times = dataFrame.diff()[dataFrame.columns[0]]
+        negative_delta_times = delta_times.loc[delta_times < 0]
+        times = dataFrame[dataFrame.columns[0]]
+        for row in negative_delta_times.index:
+            times[row:len(times.index)] += rollover_value
+        dataFrame[dataFrame.columns[0]] = times
         return dataFrame
             
 
