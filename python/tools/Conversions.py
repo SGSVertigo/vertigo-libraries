@@ -1,5 +1,5 @@
 import numpy as np
-import quaternion as q
+import quaternion
 import math
 
 class RollPitchYaw(object):
@@ -9,11 +9,11 @@ class RollPitchYaw(object):
     @staticmethod
     def to_eul(q: Quaternion) -> np.array:
         q = q.elements
-        t0 = -2 * (q[2] * q[2] + q[3] * q[3]) + 1;
-        t1 = 2 * (q[1] * q[2] - q[0] * q[3]);
-        t2 = -2 * (q[1] * q[3] + q[0] * q[2]);
-        t3 = 2 * (q[2] * q[3] - q[0] * q[1]);
-        t4 = -2 * (q[1] * q[1] + q[2] * q[2]) + 1;
+        t0 = -2 * (q[2] * q[2] + q[3] * q[3]) + 1
+        t1 = 2 * (q[1] * q[2] - q[0] * q[3])
+        t2 = -2 * (q[1] * q[3] + q[0] * q[2])
+        t3 = 2 * (q[2] * q[3] - q[0] * q[1])
+        t4 = -2 * (q[1] * q[1] + q[2] * q[2]) + 1
 
         if t2 > 1:
             t2 = 1
