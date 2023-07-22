@@ -4,35 +4,32 @@ import numpy as np
 from scipy import interpolate
 
 
-# Arrays of data
-
-# IMU
-imutime = []
-ax = []  # accel x
-ay = []  # accel y
-az = []  # accel z
-an = []  # accel north
-ae = []  # accel east
-ad = []  # accel down
-
-# GPS
-gpstime = []
-lat = []
-lon = []
-alt = []
-eastings = []
-northings = []
-alt_relative = []
-
-
 class Kalman3d:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, imutime, an, ae, ad, gpstime, lat, lon, alt) -> None:
+        # Arrays of data
+
+        # IMU
+        self.imutime = np.array(imutime)
+        self.an = np.array(an)  # accel north
+        self.ae = np.array(ae)  # accel east
+        self.ad = np.array(ad)  # accel down
+
+        # GPS
+        self.gpstime = np.array(gpstime)
+        self.lat = np.array(lat)
+        self.lon = np.array(lon)
+        self.alt = np.array(alt)
+        self.eastings = []
+        self.northings = []
+        self.alt_relative = []
 
     def llm2utm(self):
         (eastings, northings, _, _) = utm.from_latlon(self.latitudes, self.longitudes)
-        self.alt_relative = -(
-            self.altitudes - self.altitudes[0]
+        altitudes = np.array(self.alt)
+        eastings = np.array(eastings)
+        northings = np.array(northings)
+        self.alt_relative = (
+            -(altitudes - altitudes[0]) * -1.0
         )  # convert to relative, down is positive
         self.eastings = eastings - eastings[0]  # convert to relative
         self.northings = northings - northings[0]  # convert to relative
@@ -111,19 +108,17 @@ class Kalman3d:
 
         kal_x_stor = np.zero(9, n_steps)
 
-        for i in range(0,n_steps-1):
+        for i in range(0, n_steps - 1):
             # Predict
-            xp = F * x # no inputs
+            xp = F * x  # no inputs
             Pp = F * P * np.conj(F) + Q
-            
+
             # Update
             y = sensors(i) - H * x
             S = H * P * np.conj(H) + R
-            K = Pp * np.conj(H) * np.linalg.inv(S);
+            K = Pp * np.conj(H) * np.linalg.inv(S)
             x = xp + K * y
             P = (np.identity(9) - K * H) * Pp
-            
+
             # Store
             kal_x_stor[:, i] = x
-            
-
